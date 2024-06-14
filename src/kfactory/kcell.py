@@ -7539,20 +7539,11 @@ def show(
     try:
         stk = inspect.getouterframes(inspect.currentframe())
         frame = stk[2]
-        
-        if not Path(frame.filename).exists:
-            raise FileNotFoundError
-        elif frame.function != "<module>":
-            name = Path(frame.filename).stem + "_" + frame.function
-        else:
-            name = Path(frame.filename).stem
+        name = Path(frame.frame.f_globals['__file__']).stem()
+        if frame.function != "<module>":
+            name += "_" + frame.function
     except Exception:
-        try:
-            from __main__ import __file__ as mf
-
-            name = Path(mf).stem
-        except ImportError:
-            name = "shell"
+        name = "shell"
 
     _kcl_paths: list[dict[str, str]] = []
 
@@ -7583,11 +7574,11 @@ def show(
             )
         if not file:
             try:
-                from __main__ import __file__ as mf
-
-                name = Path(mf).stem
-            except ImportError:
-                mf = "shell"
+                stk = inspect.getouterframes(inspect.currentframe())
+                frame = stk[2]
+                name = Path(frame.frame.f_globals['__file__']).stem
+            except KeyError:
+                name = "shell"
             tf = Path(gettempdir()) / (name + ".oas")
             tf.parent.mkdir(parents=True, exist_ok=True)
             layout.write(tf, save_options)
@@ -7636,11 +7627,11 @@ def show(
             )
         if not file:
             try:
-                from __main__ import __file__ as mf
-
-                name = Path(mf).stem
-            except ImportError:
-                mf = "shell"
+                stk = inspect.getouterframes(inspect.currentframe())
+                frame = stk[2]
+                name = Path(frame.frame.f_globals['__file__']).stem
+            except KeyError:
+                name = "shell"
             tf = Path(gettempdir()) / (name + ".gds")
             tf.parent.mkdir(parents=True, exist_ok=True)
             layout.write(tf, save_options)
@@ -7698,11 +7689,11 @@ def show(
                 )
             if not lyrdbfile:
                 try:
-                    from __main__ import __file__ as mf
-
-                    name = Path(mf).stem
-                except ImportError:
-                    mf = "shell"
+                    stk = inspect.getouterframes(inspect.currentframe())
+                    frame = stk[2]
+                    name = Path(frame.frame.f_globals['__file__']).stem
+                except KeyError:
+                    name = "shell"
                 tf = Path(gettempdir()) / (name + ".lyrdb")
                 tf.parent.mkdir(parents=True, exist_ok=True)
                 lyrdb.save(str(tf))
@@ -7746,11 +7737,11 @@ def show(
                 )
             if not l2nfile:
                 try:
-                    from __main__ import __file__ as mf
-
-                    name = Path(mf).stem
-                except ImportError:
-                    mf = "shell"
+                    stk = inspect.getouterframes(inspect.currentframe())
+                    frame = stk[2]
+                    name = Path(frame.frame.f_globals['__file__']).stem
+                except KeyError:
+                    name = "shell"
                 tf = Path(gettempdir()) / (name + ".l2n")
                 tf.parent.mkdir(parents=True, exist_ok=True)
                 l2n.write(str(tf))
