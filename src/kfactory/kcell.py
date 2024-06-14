@@ -7539,16 +7539,18 @@ def show(
     try:
         stk = inspect.getouterframes(inspect.currentframe())
         frame = stk[2]
-        name = (
-            Path(frame.filename).stem + "_" + frame.function
-            if frame.function != "<module>"
-            else Path(frame.filename).stem
-        )
+        
+        if not Path(frame.filename).exists:
+            raise FileNotFoundError
+        elif frame.function != "<module>":
+            name = Path(frame.filename).stem + "_" + frame.function
+        else:
+            name = Path(frame.filename).stem
     except Exception:
         try:
             from __main__ import __file__ as mf
 
-            name = mf
+            name = Path(mf).stem
         except ImportError:
             name = "shell"
 
@@ -7582,6 +7584,8 @@ def show(
         if not file:
             try:
                 from __main__ import __file__ as mf
+
+                name = Path(mf).stem
             except ImportError:
                 mf = "shell"
             tf = Path(gettempdir()) / (name + ".oas")
@@ -7633,6 +7637,8 @@ def show(
         if not file:
             try:
                 from __main__ import __file__ as mf
+
+                name = Path(mf).stem
             except ImportError:
                 mf = "shell"
             tf = Path(gettempdir()) / (name + ".gds")
@@ -7693,6 +7699,8 @@ def show(
             if not lyrdbfile:
                 try:
                     from __main__ import __file__ as mf
+
+                    name = Path(mf).stem
                 except ImportError:
                     mf = "shell"
                 tf = Path(gettempdir()) / (name + ".lyrdb")
@@ -7739,6 +7747,8 @@ def show(
             if not l2nfile:
                 try:
                     from __main__ import __file__ as mf
+
+                    name = Path(mf).stem
                 except ImportError:
                     mf = "shell"
                 tf = Path(gettempdir()) / (name + ".l2n")
